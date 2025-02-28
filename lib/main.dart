@@ -97,9 +97,12 @@ class _TaskListScreenState extends State<TaskListScreen> {
                       _toggleTaskCompletion(index);
                     },
                   ),
-                  trailing: IconButton(
-                    icon: Icon(Icons.delete, color: Colors.red),
+                  trailing: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
                     onPressed: () => _removeTask(index),
+                    child: Text('Delete', style: TextStyle(color: Colors.white)),
                   ),
                 );
               },
