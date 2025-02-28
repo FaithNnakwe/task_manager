@@ -7,8 +7,9 @@ void main() {
 class Task {
   String name;
   bool isCompleted;
+  String priority;
 
-  Task({required this.name, this.isCompleted = false});
+  Task({required this.name, this.isCompleted = false, required this.priority});
 }
 
 class TaskApp extends StatelessWidget {
@@ -29,11 +30,14 @@ class TaskListScreen extends StatefulWidget {
 class _TaskListScreenState extends State<TaskListScreen> {
   List<Task> tasks = [];
   final TextEditingController _taskController = TextEditingController();
+  String _selectedPriority = 'Medium';
+  final List<String> _priorities = ['High', 'Medium', 'Low'];
 
   void _addTask() {
     if (_taskController.text.isNotEmpty) {
       setState(() {
-        tasks.add(Task(name: _taskController.text));
+        tasks.add(Task(name: _taskController.text, priority: _selectedPriority));
+        _sortTasks();
       });
       _taskController.clear();
     }
@@ -48,6 +52,12 @@ class _TaskListScreenState extends State<TaskListScreen> {
   void _removeTask(int index) {
     setState(() {
       tasks.removeAt(index);
+    });
+  }
+
+  void _sortTasks() {
+    tasks.sort((a, b) {
+      return _priorities.indexOf(a.priority).compareTo(_priorities.indexOf(b.priority));
     });
   }
 
@@ -71,6 +81,21 @@ class _TaskListScreenState extends State<TaskListScreen> {
                   ),
                 ),
                 SizedBox(width: 8),
+                DropdownButton<String>(
+                  value: _selectedPriority,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedPriority = newValue!;
+                    });
+                  },
+                  items: _priorities.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+                SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: _addTask,
                   child: Text('Add'),
@@ -91,6 +116,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                           : null,
                     ),
                   ),
+                  subtitle: Text('Priority: ${tasks[index].priority}'),
                   leading: Checkbox(
                     value: tasks[index].isCompleted,
                     onChanged: (value) {
